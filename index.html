@@ -9,10 +9,12 @@
             if (md == null) {
                 md = "./README.md"
             } else {
-                md = "./🍜/" + md
+                md = "./🍜/" + md + ".md"
             }
+            console.log(md)
 
             const response = await fetch(md)
+            console.log(response)
             window["markdown"].ready.then(async markdown => {
                 const text = await response.text()
                 document.getElementById("main").innerHTML += markdown.parse(text)
