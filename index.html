@@ -1,6 +1,13 @@
 <head>
     <script src="./js/markdown.js"></script>
     <script>
+        const render = async (response) => {
+            window["markdown"].ready.then(async markdown => {
+                const text = await response.text()
+                document.getElementById("content").innerHTML += markdown.parse(text)
+            })
+        }
+
         (async () => {
             const queryString = window.location.search;
             const urlParams = new URLSearchParams(queryString);
@@ -11,30 +18,50 @@
             } else {
                 md = "./🍜/" + md + ".md"
             }
-            console.log(md)
 
-            const response = await fetch(md)
-            console.log(response)
-            window["markdown"].ready.then(async markdown => {
-                const text = await response.text()
-                document.getElementById("main").innerHTML += markdown.parse(text)
-            })
+            let response = await fetch(md)
+            if (!response.ok) {
+                md = "./README.md"
+                response = await fetch(md)
+            }
+
+            await render(response)
         })()
     </script>
 
     <style>
+        ::-webkit-scrollbar {
+            width: 0px;
+            height: 0px;
+        }
+
+        html,
         body {
             margin: 0;
+            border: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
         }
 
         #main {
+            overflow-x: hidden;
+            overflow-y: scroll;
+            position: relative;
+            -webkit-overflow-scrolling: touch;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+        }
+
+        #content {
             width: 800px;
             margin: auto;
         }
     </style>
 </head>
-<body>
+<body id="body">
     <main id="main">
-
+        <div id="content"></div>
     </main>
 </body>
